@@ -3,7 +3,7 @@
 This backlog outlines the sequential tasks required to implement the MVP as defined in `_docs/plan.md`.
 
 ## Phase 1: Foundation & Authentication
-- [ ] **Task 1.1: Project Setup**
+- [x] **Task 1.1: Project Setup**
     - Initialize Django project and application.
     - Configure database settings and base templates.
 - [ ] **Task 1.2: User Authentication**
