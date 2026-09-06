@@ -4,6 +4,6 @@ sqlalchemy
 pydantic
 pydantic-settings
 python-jose[cryptography]
-passlib[攜帶]
+passlib[bcrypt]
 python-multipart
 Django>=4.2,<5.0
