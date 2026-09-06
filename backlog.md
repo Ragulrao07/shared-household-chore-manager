@@ -6,7 +6,7 @@ This backlog outlines the sequential tasks required to implement the MVP as defi
 - [x] **Task 1.1: Project Setup**
     - Initialize Django project and application.
     - Configure database settings and base templates.
-- [ ] **Task 1.2: User Authentication**
+- [/] **Task 1.2: User Authentication**
     - Implement Email + Password registration and login.
     - Create basic profile/account management.
 
