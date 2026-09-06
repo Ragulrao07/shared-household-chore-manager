@@ -20,7 +20,7 @@ This backlog outlines the sequential tasks required to implement the MVP as defi
     - Enforce the "one household per user" constraint.
 
 ## Phase 3: Chore Management
-- [ ] **Task 3.1: Chore Model & CRUD**
+- [x] **Task 3.1: Chore Model & CRUD**
     - Create `Chore` model with name, description, frequency, and participants.
     - Implement soft deletion for chores.
     - Build views for creating, editing, and listing chores.
