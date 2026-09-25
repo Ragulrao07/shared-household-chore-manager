@@ -7,3 +7,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 Django>=4.2,<5.0
+gunicorn
+psycopg2-binary
+dj-database-url
+whitenoise
