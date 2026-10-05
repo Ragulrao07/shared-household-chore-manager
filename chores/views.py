@@ -5,29 +5,13 @@ from django.views.decorators.csrf import csrf_exempt
 from prometheus_client import Counter, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from .models import Chore
 
-# Custom Application Metrics
 APP_ENV = os.getenv('APP_ENV', 'dev')
 
-CHORE_CREATIONS = Counter(
-    'chores_created_total',
-    'Total chores successfully created',
-    ['environment']
-)
-
-CHORE_FAILURES = Counter(
-    'chore_creation_failures_total',
-    'Total failures during chore creation',
-    ['environment']
-)
-
-ACTIVE_CHORES = Gauge(
-    'chores_active_total',
-    'Current number of incomplete chores',
-    ['environment']
-)
+CHORE_CREATIONS = Counter('chores_created_total', 'Total chores successfully created', ['environment'])
+CHORE_FAILURES = Counter('chore_creation_failures_total', 'Total failures during chore creation', ['environment'])
+ACTIVE_CHORES = Gauge('chores_active_total', 'Current number of incomplete chores', ['environment'])
 
 def metrics_view(request):
-    """Exposes Prometheus scrape metrics."""
     ACTIVE_CHORES.labels(environment=APP_ENV).set(
         Chore.objects.filter(is_completed=False, is_deleted=False).count()
     )
@@ -57,15 +41,10 @@ def chore_list_api(request):
                 CHORE_FAILURES.labels(environment=APP_ENV).inc()
                 return JsonResponse({'error': 'Name is required'}, status=400)
 
-            frequency = body.get('frequency', 'daily').lower()
             description = body.get('description', '')
+            frequency = body.get('frequency', 'daily').lower()
 
-            chore = Chore.objects.create(
-                name=name,
-                frequency=frequency,
-                description=description,
-            )
-
+            chore = Chore.objects.create(name=name, frequency=frequency, description=description)
             CHORE_CREATIONS.labels(environment=APP_ENV).inc()
 
             return JsonResponse({
