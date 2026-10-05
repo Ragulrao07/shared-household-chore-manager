@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Household Chore Manager</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #1e293b; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        form { display: flex; gap: 8px; margin-bottom: 20px; }
+        input, button { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        button { background: #0284c7; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+    <h1>Shared Household Chore Manager</h1>
+    <p>Status: <span class="badge">Live</span></p>
+
+    <form id="choreForm">
+        <input type="text" id="name" placeholder="New chore name..." required style="flex: 1;" />
+        <button type="submit">Add Chore</button>
+    </form>
+
+    <div id="choreList">Loading chores...</div>
+
+    <script>
+        async function loadChores() {
+            const res = await fetch('/api/chores/');
+            const data = await res.json();
+            const container = document.getElementById('choreList');
+            if (data.length === 0) {
+                container.innerHTML = '<p>No chores recorded yet.</p>';
+                return;
+            }
+            container.innerHTML = data.map(c => `
+                <div class="card">
+                    <strong>${c.name}</strong> 
+                    <span class="badge">${c.frequency}</span>
+                    <p style="margin: 4px 0 0; color: #64748b;">${c.description || 'No description'}</p>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('choreForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('name');
+            await fetch('/api/chores/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name: input.value, frequency: 'daily' })
+            });
+            input.value = '';
+            loadChores();
+        });
+
+        loadChores();
+    </script>
+</body>
+</html>
