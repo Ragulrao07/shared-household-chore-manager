@@ -1,0 +1,12 @@
+﻿groups:
+  - name: chore_alerts
+    rules:
+      - alert: HighChoreCreationFailureRate
+        expr: increase(chore_creation_failures_total[1m]) > 2
+        for: 10s
+        labels:
+          severity: critical
+          service: shared-household-chore-manager
+        annotations:
+          summary: "Repeated failures creating household chores"
+          description: "Chore creation endpoint has failed {{ $value }} times in the past minute in environment {{ $labels.environment }}."
