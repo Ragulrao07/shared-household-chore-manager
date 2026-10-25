@@ -20,7 +20,7 @@ def metrics_view(request):
 @csrf_exempt
 def chore_list_api(request):
     if request.method == 'GET':
-        chores = Chore.objects.filter(is_deleted=False)
+        chores = Chore.objects.filter(is_deleted=False).order_by('is_completed', '-created_at')
         data = [
             {
                 'id': chore.id,
@@ -59,4 +59,20 @@ def chore_list_api(request):
             CHORE_FAILURES.labels(environment=APP_ENV).inc()
             return JsonResponse({'error': str(e)}, status=500)
 
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def chore_toggle_complete(request, chore_id):
+    if request.method == 'POST':
+        try:
+            chore = Chore.objects.get(id=chore_id, is_deleted=False)
+            chore.is_completed = not chore.is_completed
+            chore.save()
+            return JsonResponse({
+                'id': chore.id,
+                'name': chore.name,
+                'is_completed': chore.is_completed
+            })
+        except Chore.DoesNotExist:
+            return JsonResponse({'error': 'Chore not found'}, status=404)
     return JsonResponse({'error': 'Method not allowed'}, status=405)

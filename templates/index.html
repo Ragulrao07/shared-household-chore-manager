@@ -7,12 +7,25 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
         h1 { color: #1e293b; }
-        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
         .badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-done { background: #dcfce7; color: #15803d; }
         form { display: flex; gap: 8px; margin-bottom: 20px; }
-        input, button { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
-        button { background: #0284c7; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0369a1; }
+        input[type="text"], button { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .add-btn { background: #0284c7; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .card { 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        .completed { opacity: 0.6; }
+        .completed .chore-title { text-decoration: line-through; color: #64748b; }
+        .action-btn { background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+        .action-btn:hover { background: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -21,7 +34,7 @@
 
     <form id="choreForm">
         <input type="text" id="name" placeholder="New chore name..." required style="flex: 1;" />
-        <button type="submit">Add Chore</button>
+        <button type="submit" class="add-btn">Add Chore</button>
     </form>
 
     <div id="choreList">Loading chores...</div>
@@ -36,12 +49,24 @@
                 return;
             }
             container.innerHTML = data.map(c => `
-                <div class="card">
-                    <strong>${c.name}</strong> 
-                    <span class="badge">${c.frequency}</span>
-                    <p style="margin: 4px 0 0; color: #64748b;">${c.description || 'No description'}</p>
+                <div class="card ${c.is_completed ? 'completed' : ''}">
+                    <div>
+                        <strong class="chore-title">${c.name}</strong> 
+                        <span class="badge ${c.is_completed ? 'badge-done' : ''}">${c.is_completed ? 'Completed' : c.frequency}</span>
+                        <p style="margin: 4px 0 0; color: #64748b; font-size: 14px;">${c.description || 'No description'}</p>
+                    </div>
+                    <div>
+                        <button class="action-btn" onclick="toggleChore(${c.id})">
+                            ${c.is_completed ? '↩ Mark Pending' : '✓ Complete'}
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function toggleChore(id) {
+            await fetch(`/api/chores/${id}/toggle/`, { method: 'POST' });
+            loadChores();
         }
 
         document.getElementById('choreForm').addEventListener('submit', async (e) => {
